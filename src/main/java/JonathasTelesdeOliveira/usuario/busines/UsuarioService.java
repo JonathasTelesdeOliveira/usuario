@@ -91,4 +91,26 @@ private final JwtUtil jwtUtil;
         Telefone telefone = usuarioConverter.updateTelefone(dto, entity);
         return usuarioConverter.paraTelefoneDTO(telefoneRepository.save(telefone));
     }
+    public EnderecoDTO cadastroEndereco(String token, EnderecoDTO dto) {
+        /* buscou o email através do Token */
+        String email = jwtUtil.extrairEmailToken(token.substring(7));
+        Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow(() ->
+                new ResourceNotFoundException("Email já cadastrado"));
+
+        Endereco endereco = usuarioConverter.paraEnderecoEntity(dto, usuario.getId());
+        return usuarioConverter.paraEnderecoDTO(
+                enderecoRepository.save(endereco));
+    }
+    public TelefoneDTO cadastroTelefone(String token, TelefoneDTO dto){
+        /* buscou o email através do Token */
+        String email = jwtUtil.extrairEmailToken(token.substring(7));
+        Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow(()->
+                new ResourceNotFoundException("Email não encontrado! "));
+
+        Telefone telefone = usuarioConverter.paraTelefoneEntity(dto, usuario.getId());
+        return usuarioConverter.paraTelefoneDTO(
+                telefoneRepository.save(telefone)
+        );
+    }
+
 }
