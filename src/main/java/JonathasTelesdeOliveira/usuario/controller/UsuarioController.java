@@ -65,4 +65,15 @@ private final JwtUtil jwtUtil;
                                                           @RequestParam("id")Long id){
         return ResponseEntity.ok(usuarioService.atualizarDadosTelefone(id, dto));
     }
+    @PutMapping("/enderecos")
+    public ResponseEntity<EnderecoDTO>cadastraEndereco(@RequestBody EnderecoDTO dto,
+                                                          @RequestHeader("Authorization")String token){
+        return ResponseEntity.ok(usuarioService.cadastroEndereco(token, dto));
+    }
+    @PutMapping("/telefones")
+    public ResponseEntity<TelefoneDTO>cadastraTelefone(@RequestBody TelefoneDTO dto,
+                                                          @RequestHeader("Authorization")String token){
+        return ResponseEntity.ok(usuarioService.cadastroTelefone(token, dto));
+    }
+
 }
