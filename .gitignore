@@ -17,6 +17,15 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
+#########################------ REMOVENDO ARQUIVOS SENSIVEIS -----########################
+# IGNORAR TUDO NA PASTA SECURITY
+src/main/JonathasTelesdeOliveira.usuario.ifraestruture.security
+
+# IGNORAR application.properties
+src/main/resources/application.properties
+
+########################################################################################
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
