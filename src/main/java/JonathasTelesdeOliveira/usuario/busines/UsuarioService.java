@@ -15,6 +15,12 @@ import JonathasTelesdeOliveira.usuario.ifraestruture.repository.TelefoneReposito
 import JonathasTelesdeOliveira.usuario.ifraestruture.repository.UsuarioRepository;
 import JonathasTelesdeOliveira.usuario.ifraestruture.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,21 +32,43 @@ private final EnderecoRepository enderecoRepository;
 private final TelefoneRepository telefoneRepository;
 private final PasswordEncoder passwordEncoder;
 private final UsuarioConverter usuarioConverter;
+private final AuthenticationManager authenticationManager;
 private final JwtUtil jwtUtil;
 
-    public Usuario salvarUsusario(Usuario usuario) {
-        emailExiste(usuario.getEmail());
-        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
-        return usuarioRepository.save(usuario);
+    public UsuarioDTO salvaUsuario(UsuarioDTO usuarioDTO) {
+        emailExiste(usuarioDTO.getEmail());
+        usuarioDTO.setSenha(passwordEncoder.encode(usuarioDTO.getSenha()));
+        Usuario usuario = usuarioConverter.paraUsuario(usuarioDTO);
+        return usuarioConverter.paraUsuarioDTO(
+                usuarioRepository.save(usuario)
+        );
     }
-    public void emailExiste(String email){
-        if(verificaEmailExiste(email) ){
-            throw new ConflictException("Usuario já cadastrado: " + email);
+    public String autenticarUsuario(UsuarioDTO usuarioDTO){
+        try{
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(usuarioDTO.getEmail(),
+                            usuarioDTO.getSenha())
+            );
+            return "Bearer " + jwtUtil.generateToken(authentication.getName());
+        } catch (BadCredentialsException | UsernameNotFoundException | AuthorizationDeniedException e) {
+            throw new UsernameNotFoundException("Usuário ou senha inválidos: ", e.getCause());
         }
     }
-    public boolean verificaEmailExiste(String email){
+
+    public void emailExiste(String email) {
+        try {
+            boolean existe = verificaEmailExistente(email);
+            if (existe) {
+                throw new ConflictException("Email já cadastrado " + email);
+            }
+        } catch (ConflictException e) {
+            throw new ConflictException("Email já cadastrado ", e.getCause());
+        }
+    }
+    public boolean verificaEmailExistente(String email){
         return usuarioRepository.existsByEmail(email);
     }
+
     public UsuarioDTO buscarPorEmail(String email){
         try {
             return  usuarioConverter.paraUsuarioDTO(
@@ -51,15 +79,6 @@ private final JwtUtil jwtUtil;
     }
     public void deletaUsuarioPorEmail(String email){
         usuarioRepository.deleteAllByEmail(email);
-    }
-
-
-    public UsuarioDTO salvarUsuarioDTO(UsuarioDTO usuarioDTO){
-        Usuario usuario = usuarioConverter.paraUsuario(usuarioDTO);
-        usuario.setSenha(passwordEncoder.encode(usuarioDTO.getSenha()));
-        return usuarioConverter.paraUsuarioDTO(
-                usuarioRepository.save(usuario)
-        );
     }
 
     public UsuarioDTO atualizarDadosUsuario(String token, UsuarioDTO dto){
