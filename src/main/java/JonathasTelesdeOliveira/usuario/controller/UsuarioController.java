@@ -8,8 +8,6 @@ import JonathasTelesdeOliveira.usuario.ifraestruture.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/usuario")
@@ -24,25 +22,16 @@ private final JwtUtil jwtUtil;
 
     @PostMapping
     public ResponseEntity<UsuarioDTO> salvarUsuario(@RequestBody UsuarioDTO usuarioDTO){
-        return ResponseEntity.ok(usuarioService.salvarUsuarioDTO(usuarioDTO));
+        return ResponseEntity.ok(usuarioService.salvaUsuario(usuarioDTO));
     }
 
-   /* @PostMapping
-    public ResponseEntity<Usuario> salvaUsuario(@RequestBody Usuario usuario){
-        return ResponseEntity.ok(usuarioService.salvarUsusario(usuario));
-    } */
-
     @PostMapping("/login")
-    public String login(@RequestBody UsuarioDTO usuarioDTO){
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(usuarioDTO.getEmail(),
-                        usuarioDTO.getSenha())
-        );
-        return "Bearer " + jwtUtil.generateToken(authentication.getName());
+    public ResponseEntity<String> login(@RequestBody UsuarioDTO usuarioDTO){
+           return ResponseEntity.ok(usuarioService.autenticarUsuario(usuarioDTO));
     }
 
     @GetMapping
-    public ResponseEntity<UsuarioDTO> buscarPorEmail(@RequestParam("email")String email){
+    public ResponseEntity<UsuarioDTO> buscarUsuarioPorEmail(@RequestParam("email")String email){
         return ResponseEntity.ok(usuarioService.buscarPorEmail(email));
     }
     @DeleteMapping("/{email}")
