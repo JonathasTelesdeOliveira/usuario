@@ -41,10 +41,19 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.GET, "/auth").permitAll()
+                        // Swagger / OpenAPI
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
+
+                        // Endpoints públicos
                         .requestMatchers(HttpMethod.POST, "/usuario").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuario/login").permitAll()
-                        .requestMatchers("/usuario/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/usuario/endereco/**").permitAll()
+
+                        // Tudo o resto exige JWT
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
