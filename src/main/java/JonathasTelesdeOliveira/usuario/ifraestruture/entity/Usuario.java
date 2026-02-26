@@ -28,11 +28,11 @@ public class Usuario implements UserDetails {
     @Column(name = "senha")
     private String senha;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name="usuario_id", referencedColumnName = "id")
     private List<Endereco> enderecos;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", referencedColumnName = "id")
     private List<Telefone>telefones;
 
@@ -48,7 +48,7 @@ public class Usuario implements UserDetails {
 
     @Override
     public String getUsername() {
-        return senha;
+        return email;
     }
 
     @Override

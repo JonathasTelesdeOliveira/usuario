@@ -23,6 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -69,6 +70,7 @@ private final JwtUtil jwtUtil;
         return usuarioRepository.existsByEmail(email);
     }
 
+    @Transactional(readOnly = true)
     public UsuarioDTO buscarPorEmail(String email){
         try {
             return  usuarioConverter.paraUsuarioDTO(
