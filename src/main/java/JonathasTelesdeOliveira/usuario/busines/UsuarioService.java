@@ -79,6 +79,7 @@ private final JwtUtil jwtUtil;
         }catch (ResourceNotFoundException e){
                 throw new ResourceNotFoundException("Email não encontrado!"+ e);}
     }
+
     public void deletaUsuarioPorEmail(String email){
         usuarioRepository.deleteAllByEmail(email);
     }
