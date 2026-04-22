@@ -123,6 +123,7 @@ private final JwtUtil jwtUtil;
         return usuarioConverter.paraEnderecoDTO(
                 enderecoRepository.save(endereco));
     }
+
     public TelefoneDTO cadastroTelefone(String token, TelefoneDTO dto){
         /* buscou o email através do Token */
         String email = jwtUtil.extrairEmailToken(token.substring(7));

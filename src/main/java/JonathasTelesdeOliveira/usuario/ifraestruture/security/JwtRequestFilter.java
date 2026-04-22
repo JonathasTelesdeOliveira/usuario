@@ -43,24 +43,26 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             // Obtém o valor do header "Authorization" da requisição
             final String authorizationHeader = request.getHeader("Authorization");
 
-            // Verifica se o cabeçalho existe e começa com "Bearer "
-            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-                // Extrai o token JWT do cabeçalho
-                final String token = authorizationHeader.substring(7);
-                // Extrai o nome de usuário do token JWT
-                final String username = jwtUtil.extrairEmailToken(token);
+            if (authorizationHeader != null) {
+                    // Verifica se o cabeçalho existe e começa com "Bearer "
+                if (authorizationHeader != null && authorizationHeader.toLowerCase().startsWith("bearer ")) {
+                    // Extrai o token JWT do cabeçalho
+                    final String token = authorizationHeader.substring(7);
+                    // Extrai o nome de usuário do token JWT
+                    final String username = jwtUtil.extrairEmailToken(token);
 
-                // Se o nome de usuário não for nulo e o usuário não estiver autenticado ainda
-                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    // Carrega os detalhes do usuário a partir do nome de usuário
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                    // Valida o token JWT
-                    if (jwtUtil.validateToken(token, username)) {
-                        // Cria um objeto de autenticação com as informações do usuário
-                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
-                        // Define a autenticação no contexto de segurança
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    // Se o nome de usuário não for nulo e o usuário não estiver autenticado ainda
+                    if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                        // Carrega os detalhes do usuário a partir do nome de usuário
+                        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                        // Valida o token JWT
+                        if (jwtUtil.validateToken(token, username)) {
+                            // Cria um objeto de autenticação com as informações do usuário
+                            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                    userDetails, null, userDetails.getAuthorities());
+                            // Define a autenticação no contexto de segurança
+                            SecurityContextHolder.getContext().setAuthentication(authentication);
+                        }
                     }
                 }
             }
@@ -73,19 +75,18 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             response.getWriter().write(
                     buildError(
                         HttpStatus.UNAUTHORIZED.value(),
-                        "Token expirado!",
-                        request.getRequestURI(),
+                            request.getRequestURI(),
                         e.getMessage()
                     )
             );
         }
     }
 
-        private String buildError(int Status, String mensage, String path, String error){
+        private String buildError(int Status, String path, String error){
             ErrorResponseDTO errorResponseDTO = ErrorResponseDTO.builder()
                     .timestamp(LocalDateTime.now())
                     .status(Status)
-                    .message(mensage)
+                    .message("Token expirado!")
                     .error(error)
                     .path(path)
                     .build();
