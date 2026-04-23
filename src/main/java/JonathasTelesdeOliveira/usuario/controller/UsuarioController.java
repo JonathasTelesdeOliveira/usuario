@@ -48,7 +48,7 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.atualizarDadosUsuario(token, dto));
     }
 
-    @PutMapping("/endereco")
+    @PutMapping("/enderecos")
     public ResponseEntity<EnderecoDTO> atualizarEnderecoId(@RequestBody EnderecoDTO dto,
                                                            @RequestParam("id") Long id) {
         return ResponseEntity.ok(usuarioService.atualizarDadosEndereco(id, dto));
@@ -60,20 +60,20 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.atualizarDadosTelefone(id, dto));
     }
 
-    @PutMapping("/enderecos")
+    @PostMapping("/enderecos")
     public ResponseEntity<EnderecoDTO> cadastraEndereco(@RequestBody EnderecoDTO dto,
                                                         @RequestHeader("Authorization") String token) {
         return ResponseEntity.ok(usuarioService.cadastroEndereco(token, dto));
     }
 
-    @PutMapping("/telefones")
+    @PostMapping("/telefones")
     public ResponseEntity<TelefoneDTO> cadastraTelefone(@RequestBody TelefoneDTO dto,
                                                         @RequestHeader("Authorization") String token) {
         return ResponseEntity.ok(usuarioService.cadastroTelefone(token, dto));
     }
 
-    @GetMapping("/endereco/{cep}")
-    public ResponseEntity<ViaCepDTO> validarEndereco(@PathVariable("cep") String cep) {
+    @GetMapping("/enderecos/{cep}")
+    public ResponseEntity<ViaCepDTO> buscaDadosDoCep(@PathVariable("cep") String cep) {
         return ResponseEntity.ok(viaCepService.buscarDadosEndereco(cep));
     }
 }

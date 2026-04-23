@@ -51,10 +51,15 @@ public class SecurityConfig {
                         // Endpoints públicos
                         .requestMatchers(HttpMethod.POST, "/usuario").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuario/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/usuario/endereco/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/usuario/enderecos/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/usuario").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/usuario/enderecos").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/usuario/enderecos").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/usuario/**").authenticated()
 
                         // Tudo o resto exige JWT
-                        .anyRequest().authenticated()
+                        .anyRequest()
+                        .authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
